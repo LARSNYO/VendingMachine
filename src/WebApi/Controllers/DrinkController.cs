@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Application.DTOs.Drink;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class DrinkController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DrinkGetResponseDto>> GetById(Guid id)
     {
-        var drink = await _drinkService.GetDrinkByIdAsync(id);
+        var drink = await _drinkService.GetDrinkByIdAsyncAsNoTracking(id);
         if (drink is null) return NotFound();
         return Ok(drink);
     }
@@ -34,6 +35,24 @@ public class DrinkController : ControllerBase
     {
         var created = await _drinkService.CreateDrinkAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<DrinkGetResponseDto>> Update(Guid id, [FromBody] DrinkPostRequestDto dto)
+    {
+        if (!await _drinkService.DrinkExistAsync(id)) return NotFound();
+
+        await _drinkService.UpdateDrinkAsync(id, dto);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        if (!await _drinkService.DrinkExistAsync(id)) return NotFound();
+
+        await _drinkService.DeleteDrinkAsync(id);
+        return NoContent();
     }
 
 }

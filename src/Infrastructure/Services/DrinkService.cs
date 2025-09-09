@@ -18,9 +18,9 @@ public class DrinkService : IDrinkService
         return drinks.Select(MapDrinkToGetDto);
     }
 
-    public async Task<DrinkGetResponseDto?> GetDrinkByIdAsync(Guid id)
+    public async Task<DrinkGetResponseDto?> GetDrinkByIdAsyncAsNoTracking(Guid id)
     {
-        var drink = await _drinkRepository.GetDrinkByIdAsync(id);
+        var drink = await _drinkRepository.GetDrinkByIdAsyncAsNoTracking(id);
         return drink is null ? null : MapDrinkToGetDto(drink);
     }
 
@@ -50,7 +50,7 @@ public class DrinkService : IDrinkService
 
     public async Task<DrinkGetResponseDto?> UpdateDrinkAsync(Guid id, DrinkPostRequestDto dto)
     {
-        var existing = await _drinkRepository.GetDrinkByIdAsync(id);
+        var existing = await _drinkRepository.GetDrinkByIdAsyncAsNoTracking(id);
         if (existing is null) return null;
 
         var updated = existing with
@@ -70,7 +70,7 @@ public class DrinkService : IDrinkService
 
     public async Task<bool> DeleteDrinkAsync(Guid id)
     {
-        var existing = await _drinkRepository.GetDrinkByIdAsync(id);
+        var existing = await _drinkRepository.GetDrinkByIdAsyncAsNoTracking(id);
         if (existing is null) return false;
 
         await _drinkRepository.DeleteDrinkAsync(id);

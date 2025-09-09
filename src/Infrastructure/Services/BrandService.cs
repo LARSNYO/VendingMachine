@@ -21,9 +21,9 @@ public class BrandService : IBrandService
         return brands.Select(MapBrandToGetDto);
     }
 
-    public async Task<BrandGetResponseDto?> GetBrandByIdAsync(Guid id)
+    public async Task<BrandGetResponseDto?> GetBrandByIdAsyncAsNoTracking(Guid id)
     {
-        var brand = await _brandRepository.GetBrandByIdAsync(id);
+        var brand = await _brandRepository.GetBrandByIdAsyncAsNoTracking(id);
         return brand is null ? null : MapBrandToGetDto(brand);
     }
 
@@ -43,7 +43,7 @@ public class BrandService : IBrandService
 
     public async Task<BrandGetResponseDto?> UpdateBrandAsync(Guid id, BrandPostRequestDto dto)
     {
-        var existing = await _brandRepository.GetBrandByIdAsync(id);
+        var existing = await _brandRepository.GetBrandByIdAsyncAsNoTracking(id);
         if (existing is null) return null;
 
         var updated = existing with
@@ -59,7 +59,7 @@ public class BrandService : IBrandService
 
     public async Task<bool> DeleteBrandAsync(Guid id)
     {
-        var existing = await _brandRepository.GetBrandByIdAsync(id);
+        var existing = await _brandRepository.GetBrandByIdAsyncAsNoTracking(id);
         if (existing is null) return false;
 
         await _brandRepository.DeleteBrandAsync(id);

@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Application.DTOs.Brand;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ public class BrandController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<BrandGetResponseDto>> GetById(Guid id)
     {
-        var brand = await _brandService.GetBrandByIdAsync(id);
+        var brand = await _brandService.GetBrandByIdAsyncAsNoTracking(id);
         if (brand is null) return NotFound();
         return Ok(brand);
     }
@@ -35,5 +36,23 @@ public class BrandController : ControllerBase
     {
         var created = await _brandService.CreateBrandAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<BrandGetResponseDto>> Update(Guid id, [FromBody] BrandPostRequestDto dto)
+    {
+        if (!await _brandService.BrandExistAsync(id)) return NotFound();
+
+        await _brandService.UpdateBrandAsync(id, dto);
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        if (!await _brandService.BrandExistAsync(id)) return NotFound();
+
+        await _brandService.DeleteBrandAsync(id);
+        return NoContent();
     }
 }

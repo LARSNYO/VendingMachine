@@ -5,7 +5,7 @@ namespace Application.Interfaces.Services;
 public interface IDrinkService
 {
     Task<IEnumerable<DrinkGetResponseDto>> GetDrinksAsync();
-    Task<DrinkGetResponseDto?> GetDrinkByIdAsync(Guid id);
+    Task<DrinkGetResponseDto?> GetDrinkByIdAsyncAsNoTracking(Guid id);
     Task<DrinkGetResponseDto?> GetDrinkWithBrandByIdAsync(Guid id);
     Task<DrinkGetResponseDto> CreateDrinkAsync(DrinkPostRequestDto dto);
     Task<DrinkGetResponseDto?> UpdateDrinkAsync(Guid id, DrinkPostRequestDto dto);

@@ -19,9 +19,9 @@ public class BrandRepository : IBrandRepository
         return await _context.Brands.ToListAsync();
     }
 
-    public async Task<Brand?> GetBrandByIdAsync(Guid id)
+    public async Task<Brand?> GetBrandByIdAsyncAsNoTracking(Guid id)
     {
-        return await _context.Brands.FindAsync(id);
+        return await _context.Brands.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task AddBrandAsync(Brand brand)
@@ -36,7 +36,7 @@ public class BrandRepository : IBrandRepository
 
     public async Task DeleteBrandAsync(Guid id)
     {
-        var brand = await GetBrandByIdAsync(id);
+        var brand = await GetBrandByIdAsyncAsNoTracking(id);
         if (brand != null)
         {
             _context.Brands.Remove(brand);

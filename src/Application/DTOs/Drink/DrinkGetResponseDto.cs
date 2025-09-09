@@ -8,5 +8,7 @@ public record class DrinkGetResponseDto
     public int Quantity { get; init; }
     public string? ImagePath { get; init; }
     public Guid BrandId { get; init; }
-    public string? BrandName{ get; init; }
+    public string? BrandName { get; init; }
 }
+
+
