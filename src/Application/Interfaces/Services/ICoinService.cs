@@ -1,16 +1,16 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs.Coin;
 
 namespace Application.Interfaces.Services;
 
 public interface ICoinService
 {
-    Task<IEnumerable<Coin>> GetCoinsAsync();
-    Task<Coin?> GetByDenominationAsync(int denomination);
+    Task<IEnumerable<CoinGetResponseDto>> GetCoinsAsync();
+    Task<CoinGetResponseDto?> GetByDenominationAsync(int denomination);
     Task AddCoinsAsync(Dictionary<int, int> insertCoins);
-    Task<Coin?> GetCoinByIdAsync(Guid id);
-    Task CreateCoinAsync(Coin coin);
-    Task UpdateCoinAsync(Coin coin);
-    Task DeleteCoinAsync(Guid id);
+    Task<CoinGetResponseDto?> GetCoinByIdAsyncAsNoTracking(Guid id);
+    Task<CoinGetResponseDto> CreateCoinAsync(CoinPostResponseDto dto);
+    Task<CoinGetResponseDto?> UpdateCoinAsync(Guid id, CoinPostResponseDto dto);
+    Task<bool> DeleteCoinAsync(Guid id);
     Task<bool> CoinExistAsync(Guid id);
     Task<bool> TryTakeChangeAsync(Dictionary<int, int> changeCoins);
 }

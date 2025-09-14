@@ -1,6 +1,8 @@
 ﻿using Domain.Entities;
 using Application.Interfaces.Services;
 using Application.Interfaces.Repositories;
+using Application.DTOs.Coin;
+using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
 
@@ -13,14 +15,16 @@ public class CoinService : ICoinService
         _coinRepository = coinRepository;
     }
 
-    public async Task<IEnumerable<Coin>> GetCoinsAsync()
+    public async Task<IEnumerable<CoinGetResponseDto>> GetCoinsAsync()
     {
-        return await _coinRepository.GetCoinsAsync();
+        var coins = await _coinRepository.GetCoinsAsync();
+        return coins.Select(MapCoinToGetDto);
     }
 
-    public async Task<Coin?> GetByDenominationAsync(int denomination)
+    public async Task<CoinGetResponseDto?> GetByDenominationAsync(int denomination)
     {
-        return await _coinRepository.GetByDenominationAsync(denomination);
+        var coin = await _coinRepository.GetByDenominationAsync(denomination);
+        return coin is null ? null : MapCoinToGetDto(coin);
     }
 
     public async Task AddCoinsAsync(Dictionary<int, int> insertedCoins)
@@ -62,31 +66,67 @@ public class CoinService : ICoinService
         return true;
     }
 
-    public async Task<Coin?> GetCoinByIdAsync(Guid id)
+    public async Task<CoinGetResponseDto?> GetCoinByIdAsyncAsNoTracking(Guid id)
     {
-        return await _coinRepository.GetCoinByIdAsync(id);
+        var coin = await _coinRepository.GetCoinByIdAsyncAsNoTracking(id);
+        return coin is null ? null : MapCoinToGetDto(coin);
     }
 
-    public async Task CreateCoinAsync(Coin coin)
+    public async Task<CoinGetResponseDto> CreateCoinAsync(CoinPostResponseDto dto)
     {
+        var coin = new Coin
+        {
+            Id = Guid.NewGuid(),
+            Denomination = dto.Denomination,
+            Quantity = dto.Quantity
+        };
+
         await _coinRepository.AddCoinAsync(coin);
         await _coinRepository.SaveCoinChangesAsync();
+
+        return MapCoinToGetDto(coin);
     }
 
-    public async Task UpdateCoinAsync(Coin coin)
+    public async Task<CoinGetResponseDto?> UpdateCoinAsync(Guid id, CoinPostResponseDto dto)
     {
-        _coinRepository.UpdateCoin(coin);
+        var existing = await _coinRepository.GetCoinByIdAsyncAsNoTracking(id);
+        if (existing is null) return null;
+
+        var updated = existing with
+        {
+            Denomination = dto.Denomination,
+            Quantity = dto.Quantity
+        };
+
+        _coinRepository.UpdateCoin(updated);
         await _coinRepository.SaveCoinChangesAsync();
+
+        return MapCoinToGetDto(updated);
     }
 
-    public async Task DeleteCoinAsync(Guid id)
+    public async Task<bool> DeleteCoinAsync(Guid id)
     {
+        var existing = await _coinRepository.GetCoinByIdAsyncAsNoTracking(id);
+        if (existing is null) return false;
+
         await _coinRepository.DeleteCoinAsync(id);
         await _coinRepository.SaveCoinChangesAsync();
+
+        return true;
     }
 
     public async Task<bool> CoinExistAsync(Guid id)
     {
         return await _coinRepository.CoinExistAsync(id);
+    }
+
+    private static CoinGetResponseDto MapCoinToGetDto(Coin coin)
+    {
+        return new CoinGetResponseDto
+        {
+            Id = coin.Id,
+            Denomination = coin.Denomination,
+            Quantity = coin.Quantity
+        };
     }
 }

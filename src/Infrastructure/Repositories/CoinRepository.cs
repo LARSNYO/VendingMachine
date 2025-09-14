@@ -18,9 +18,9 @@ public class CoinRepository : ICoinRepository
         return await _context.Coins.OrderByDescending(c => c.Denomination).ToListAsync();
     }
 
-    public async Task<Coin?> GetCoinByIdAsync(Guid id)
+    public async Task<Coin?> GetCoinByIdAsyncAsNoTracking(Guid id)
     {
-        return await _context.Coins.FindAsync(id);
+        return await _context.Coins.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task<Coin?> GetByDenominationAsync(int denomination)
@@ -40,7 +40,7 @@ public class CoinRepository : ICoinRepository
 
     public async Task DeleteCoinAsync(Guid id)
     {
-        var coin = await GetCoinByIdAsync(id);
+        var coin = await GetCoinByIdAsyncAsNoTracking(id);
         if (coin != null)
         {
             _context.Coins.Remove(coin);
