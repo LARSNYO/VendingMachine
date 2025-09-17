@@ -54,8 +54,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
     });
 }
 
-// app.UseHttpsRedirection();
-// app.UseRouting();
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseSession();
 app.MapControllers();
 app.Run();
